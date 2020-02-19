@@ -1,0 +1,30 @@
+{
+  "name": "430-project-1",
+  "version": "1.0.0",
+  "engines": {
+    "node": "12.14.1",
+    "npm": "6.13.6"
+  },
+  "description": "Rich Media (430) Project 1",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkrsorenson/430-project-1.git"
+  },
+  "author": "Dakota Sorenson",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/dkrsorenson/430-project-1/issues"
+  },
+  "homepage": "https://github.com/dkrsorenson/430-project-1#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.20.1"
+  }
+}
