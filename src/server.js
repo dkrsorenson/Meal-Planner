@@ -22,7 +22,7 @@ const urlStruct = {
   },
   HEAD: {
     '/getUsers': jsonHandler.getUsersMeta,
-    '/getMeals': jsonHandler.getMealsMeta
+    '/getMeals': jsonHandler.getMealsMeta,
     '/notReal': jsonHandler.notFoundMeta,
     notFound: jsonHandler.getUsersMeta,
   },
@@ -42,7 +42,7 @@ const handlePost = (request, response, parsedUrl) => {
   request.on('data', (chunk) => {
     body.push(chunk);
   });
-  
+
   if (parsedUrl.pathname === '/addUser') {
     request.on('end', () => {
       const bodyString = Buffer.concat(body).toString();
@@ -61,7 +61,7 @@ const handlePost = (request, response, parsedUrl) => {
     request.on('end', () => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString);
-      
+
       jsonHandler.removeMeal(request, res, bodyParams);
     });
   }

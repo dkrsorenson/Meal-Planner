@@ -84,10 +84,10 @@ const addMeal = (request, response, body) => {
     meal: '',
     message: 'Title and date parameters required.',
   };
-   
+
   console.dir(body);
 
-  if(body != null){
+  if (body != null) {
     if (!body.title || !body.date) {
       responseJSON.id = 'missingParams';
       return respondJSON(request, response, 400, responseJSON);
@@ -112,7 +112,7 @@ const addMeal = (request, response, body) => {
   // if response is created, then set our created message
   if (responseCode === 201) {
     responseJSON.meal = meals[id];
-    responseJSON.message = "Created meal successfully."
+    responseJSON.message = 'Created meal successfully.';
     return respondJSON(request, response, responseCode, responseJSON);
   }
 
@@ -133,9 +133,9 @@ const getMeals = (request, response) => {
 };
 
 // function to get the list of meals without message
-const getMeals = (request, response) => {
+const getMealsMeta = (request, response) => {
   // return 200 without message, just the meta data
-    return respondJSONMeta(request, response, 200);
+  respondJSONMeta(request, response, 200);
 };
 
 // function to remove a meal from the list
@@ -167,6 +167,7 @@ module.exports = {
   getUsersMeta,
   addMeal,
   getMeals,
+  getMealsMeta,
   removeMeal,
   addUser,
 };
