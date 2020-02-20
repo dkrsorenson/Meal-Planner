@@ -82,13 +82,11 @@ const addUser = (request, response, body) => {
 const addMeal = (request, response, body) => {
   const responseJSON = {
     meal: '',
-    message: 'Title and date parameters required.',
+    message: 'Title, meal type, and day parameters required.',
   };
 
-  console.dir(body);
-
   if (body != null) {
-    if (!body.title || !body.date) {
+    if (!body.title || !body.mealType || !body.day) {
       responseJSON.id = 'missingParams';
       return respondJSON(request, response, 400, responseJSON);
     }
@@ -103,7 +101,8 @@ const addMeal = (request, response, body) => {
 
   meals[id].id = id;
   meals[id].title = body.title;
-  meals[id].date = body.date;
+  meals[id].mealType = body.mealType;
+  meals[id].day = body.day;
 
   idCount++;
 
