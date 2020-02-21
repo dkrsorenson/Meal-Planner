@@ -1,6 +1,5 @@
 const users = {};
 const meals = {};
-let idCount = 0;
 
 // function to send a json object
 const respondJSON = (request, response, status, object) => {
@@ -97,16 +96,13 @@ const addMeal = (request, response, body) => {
 
   let responseCode = 201;
 
-  if(!meals[body.day])
-  {
+  if (!meals[body.day]) {
     meals[body.day] = {};
   }
 
-  if(!meals[body.day][body.mealType])
-  {
+  if (!meals[body.day][body.mealType]) {
     meals[body.day][body.mealType] = {};
-  }
-  else {
+  } else {
     responseCode = 200;
   }
 
