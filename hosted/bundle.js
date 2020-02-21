@@ -1,16 +1,39 @@
 "use strict";
 
 // method to parse the json response object
-var parseJSON = function parseJSON(xhr, content) {
+var parseJSON = function parseJSON(xhr, content, form) {
+  if (content.hasChildNodes()) {
+    content.removeChild(content.firstChild);
+  }
+
   if (xhr.response) {
     var obj = JSON.parse(xhr.response);
     console.dir(obj); //if message in response, add to screen
 
     if (obj.message) {
       console.dir(obj.message);
-      var p = document.createElement('p');
-      p.textContent = "Message: ".concat(obj.message);
-      content.appendChild(p);
+
+      if (xhr.status === 400) {
+        var p = document.createElement('p');
+        p.textContent = "".concat(obj.message);
+        p.className = "content-warning";
+        content.appendChild(p);
+      }
+    }
+
+    if (obj.meal) {
+      var day = obj.meal.day;
+      var mealType = obj.meal.mealType;
+      var specificDayCard = form.querySelector("#".concat(day.toLowerCase()));
+      var pTag = specificDayCard.querySelector("#".concat(mealType.toLowerCase()));
+
+      if (xhr.status === 201) {
+        pTag.textContent += " ".concat(obj.meal.title);
+      } else if (xhr.status === 200) {
+        var mealTypeDesc = pTag.textContent.split(":");
+        pTag.textContent = "";
+        pTag.textContent += "".concat(mealTypeDesc[0], ": ").concat(obj.meal.title);
+      }
     } //if users in response, add to screen
 
 
@@ -36,14 +59,15 @@ var statusTitles = {
 
 var handleResponse = function handleResponse(xhr, method) {
   var content = document.querySelector('#content');
+  var form = document.querySelector('#mealForm');
 
   if (statusTitles[xhr.status]) {
-    content.innerHTML = statusTitles[xhr.status];
+    console.dir(statusTitles[xhr.status]);
   } else {
-    content.innerHTML = statusTitles["default"];
+    console.dir(statusTitles["default"]);
   }
 
-  parseJSON(xhr, content);
+  parseJSON(xhr, content, form);
 }; // send ajax
 
 

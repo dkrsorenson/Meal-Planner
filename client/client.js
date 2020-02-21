@@ -1,5 +1,9 @@
 // method to parse the json response object
-const parseJSON = (xhr, content) => {
+const parseJSON = (xhr, content, form) => {
+    if(content.hasChildNodes()){
+        content.removeChild(content.firstChild);
+    }
+
     if(xhr.response) {
       const obj = JSON.parse(xhr.response);
       console.dir(obj);
@@ -7,10 +11,30 @@ const parseJSON = (xhr, content) => {
       //if message in response, add to screen
       if(obj.message) {
         console.dir(obj.message);
-        const p = document.createElement('p');
-        p.textContent = `Message: ${obj.message}`;
-        content.appendChild(p);
+        if(xhr.status === 400){
+            const p = document.createElement('p');
+            p.textContent = `${obj.message}`;
+            p.className = "content-warning";
+            content.appendChild(p);
+        }
       } 
+
+      if(obj.meal){
+        const day = obj.meal.day;
+        const mealType = obj.meal.mealType;
+
+        const specificDayCard = form.querySelector(`#${day.toLowerCase()}`);
+        const pTag = specificDayCard.querySelector(`#${mealType.toLowerCase()}`);
+
+        if(xhr.status === 201){
+            pTag.textContent += ` ${obj.meal.title}`;
+        }
+        else if(xhr.status === 200){
+            var mealTypeDesc = pTag.textContent.split(":");
+            pTag.textContent = "";
+            pTag.textContent += `${mealTypeDesc[0]}: ${obj.meal.title}`;
+        }
+      }
     
       //if users in response, add to screen
       if(obj.users) {
@@ -36,14 +60,15 @@ const parseJSON = (xhr, content) => {
   // handles the response and printing it to the page
   const handleResponse = (xhr, method) => {
     const content = document.querySelector('#content');
+    const form = document.querySelector('#mealForm');
 
     if (statusTitles[xhr.status]){
-      content.innerHTML = statusTitles[xhr.status];
+      console.dir(statusTitles[xhr.status]);
     } else {
-      content.innerHTML = statusTitles.default;
+      console.dir(statusTitles.default);
     }
-    
-    parseJSON(xhr, content);
+
+    parseJSON(xhr, content, form);
   };
   
   // send ajax

@@ -95,26 +95,34 @@ const addMeal = (request, response, body) => {
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  const id = idCount;
+  let responseCode = 201;
 
-  meals[id] = {};
+  if(!meals[body.day])
+  {
+    meals[body.day] = {};
+  }
 
-  meals[id].id = id;
-  meals[id].title = body.title;
-  meals[id].mealType = body.mealType;
-  meals[id].day = body.day;
+  if(!meals[body.day][body.mealType])
+  {
+    meals[body.day][body.mealType] = {};
+  }
+  else {
+    responseCode = 200;
+  }
 
-  idCount++;
-
-  const responseCode = 201;
+  meals[body.day][body.mealType].title = body.title;
+  meals[body.day][body.mealType].day = body.day;
+  meals[body.day][body.mealType].mealType = body.mealType;
 
   // if response is created, then set our created message
   if (responseCode === 201) {
-    responseJSON.meal = meals[id];
+    responseJSON.meal = meals[body.day][body.mealType];
     responseJSON.message = 'Created meal successfully.';
     return respondJSON(request, response, responseCode, responseJSON);
   }
 
+  responseJSON.message = 'Updated meal successfully.';
+  responseJSON.meal = meals[body.day][body.mealType];
   return respondJSON(request, response, responseCode, responseJSON);
 };
 
