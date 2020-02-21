@@ -12,6 +12,7 @@ const urlStruct = {
     index: htmlHandler.getIndex,
     '/': htmlHandler.getIndex,
     '/style.css': htmlHandler.getCSS,
+    '/bundle.js': htmlHandler.getBundle,
     '/getUsers': jsonHandler.getUsers,
     '/addUser': jsonHandler.addUser,
     '/addMeal': jsonHandler.addMeal,
