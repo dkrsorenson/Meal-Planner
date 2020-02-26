@@ -26,9 +26,17 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.mealText, .mealTitle {
+  display: inline;
+}
+
+h3 {
+  text-align: center;
+}
+
 /* Float four columns side by side */
 .column {
-  width: 25%;
+  width: 20%;
   padding: 0 10px 20px;
   display:inline-block;
   float:none;
@@ -55,7 +63,7 @@ body {
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
   padding: 16px;
-  text-align: center;
+  text-align: left; /*was center*/
   background-color: #f1f1f1;
 }
 

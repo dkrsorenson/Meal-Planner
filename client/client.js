@@ -30,9 +30,10 @@ const parseJSON = (xhr, content, form) => {
             pTag.textContent += ` ${obj.meal.title}`;
         }
         else if(xhr.status === 200){
-            var mealTypeDesc = pTag.textContent.split(":");
-            pTag.textContent = "";
-            pTag.textContent += `${mealTypeDesc[0]}: ${obj.meal.title}`;
+            // var mealTypeDesc = pTag.textContent.split(":");
+            // pTag.textContent = "";
+            // pTag.textContent += `${mealTypeDesc[0]}: ${obj.meal.title}`;
+            pTag.textContent = ` ${obj.meal.title}`;
         }
       }
     
