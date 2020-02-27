@@ -18,6 +18,7 @@ const urlStruct = {
     '/addMeal': jsonHandler.addMeal,
     '/getMeals': jsonHandler.getMeals,
     '/removeMeal': jsonHandler.removeMeal,
+    '/searchMeals': jsonHandler.searchMeals,
     '/notReal': jsonHandler.notFound,
     notFound: jsonHandler.notFound,
   },
@@ -70,9 +71,10 @@ const handlePost = (request, response, parsedUrl) => {
 
 // function to handle a get request
 const handleGet = (request, response, parsedUrl) => {
+  const params = query.parse(parsedUrl.query);
   // route to correct method based on url
   if (urlStruct[request.method][parsedUrl.pathname]) {
-    urlStruct[request.method][parsedUrl.pathname](request, response);
+    urlStruct[request.method][parsedUrl.pathname](request, response, params);
   } else {
     urlStruct[request.method].notFound(request, response);
   }

@@ -18,7 +18,6 @@ const getBundle = (request, response) => {
   response.end();
 };
 
-
 // gets the style.css file
 const getCSS = (request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/css' });

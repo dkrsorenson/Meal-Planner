@@ -1,5 +1,5 @@
-// method to parse the json response object
-const parseJSON = (xhr, content, form) => {
+  // method to parse the json response object
+  const parseJSON = (xhr, content, form) => {
     if(content.hasChildNodes()){
         content.removeChild(content.firstChild);
     }
@@ -19,6 +19,20 @@ const parseJSON = (xhr, content, form) => {
         }
       } 
 
+      // if all meals returned, print all meals to the page
+      if(obj.meals) {
+        for(let day in obj.meals){
+          for(let meal in obj.meals[day]){
+            const mealObj = obj.meals[day][meal];
+            const specificDayCard = form.querySelector(`#${mealObj.day.toLowerCase()}`);
+            const pTag = specificDayCard.querySelector(`#${mealObj.mealType.toLowerCase()}`);
+          
+            pTag.textContent = ` ${mealObj.title}`;
+          }
+        }
+      }
+
+      // if one meal returned, print meal data to page
       if(obj.meal){
         const day = obj.meal.day;
         const mealType = obj.meal.mealType;
@@ -30,9 +44,6 @@ const parseJSON = (xhr, content, form) => {
             pTag.textContent += ` ${obj.meal.title}`;
         }
         else if(xhr.status === 200){
-            // var mealTypeDesc = pTag.textContent.split(":");
-            // pTag.textContent = "";
-            // pTag.textContent += `${mealTypeDesc[0]}: ${obj.meal.title}`;
             pTag.textContent = ` ${obj.meal.title}`;
         }
       }
@@ -71,7 +82,7 @@ const parseJSON = (xhr, content, form) => {
 
     parseJSON(xhr, content, form);
   };
-  
+
   // send ajax
   const sendAjax = (e, form) => {
     //cancel browser's default action
@@ -79,50 +90,59 @@ const parseJSON = (xhr, content, form) => {
 
     // get the method from the form
     const method = form.getAttribute('method');
+    const url = form.getAttribute('action');
 
     // variables for request
-    let url = '/';
-    let methodSelect = method;
     let data = '';
+    let params = '';
+
+    let dayField = form.querySelector('#dayField');
+    let mealTypeField = form.querySelector('#mealTypeField');
 
     if(method === 'post'){  
-      url = form.getAttribute('action');
-
       // get data to send
       const titleField = form.querySelector('#titleField');
-      const dayField = form.querySelector('#dayField');
-      const mealTypeField = form.querySelector('#mealTypeField');
       data = `title=${titleField.value}&mealType=${mealTypeField.options[mealTypeField.selectedIndex].value}&day=${dayField.options[dayField.selectedIndex].value}`;
-
-      // const dateField = form.querySelector('#dateField');
-      // data = `title=${titleField.value}&date=${dateField.value}`;
     } 
     else if(method === 'get') {
-      // get selected url and method
-      url = document.querySelector('#urlField').value;
-      methodSelect = document.querySelector('#methodSelect').value.toUpperCase();
+      if(url === '/searchMeals'){
+        params = `?mealType=${mealTypeField.options[mealTypeField.selectedIndex].value}&day=${dayField.options[dayField.selectedIndex].value}`;
+      }
     }
 
     // send request
     const xhr = new XMLHttpRequest();
-    xhr.open(methodSelect, url);
+    xhr.open(method, url + params);
     xhr.setRequestHeader("Accept", 'application/json');
-    xhr.onload = () => handleResponse(xhr, methodSelect);
+    xhr.onload = () => handleResponse(xhr, method);
     xhr.send(data);
 
     return false;
+  };
+
+  const initialGet = (method, url) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.setRequestHeader("Accept", 'application/json');
+    xhr.onload = () => handleResponse(xhr, method);
+    xhr.send();
   };
 
   // initialization
   const init = () => {
     const addMealForm = document.querySelector("#addMealForm");
     const mealForm = document.querySelector("#mealForm");
+    const searchMealsForm = document.querySelector("#searchMealsForm");
 
     let addMeal = (e) => sendAjax(e, addMealForm);
     let getMeals = (e) => sendAjax(e, mealForm);
+    let searchMeals = (e) => sendAjax(e, searchMealsForm);
 
     addMealForm.addEventListener('submit', addMeal);
     mealForm.addEventListener('submit', getMeals);
+    searchMealsForm.addEventListener('submit', searchMeals);
+
+    initialGet('GET', '/getMeals');
   };
 
   window.onload = init;

@@ -148,6 +148,32 @@ const removeMeal = (request, response, body) => {
   return respondJSONMeta(request, response, 204);
 };
 
+// function to query the meals for specific data
+const searchMeals = (request, response, params) => {
+  const responseJSON = {
+    message: 'Meal type and day parameters required.',
+  };
+
+  console.dir(params);
+
+  if (!params.mealType && !params.day) {
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  // if (params.mealType === 'none') {
+
+  // }
+
+
+  // if (params.day === 'none') {
+
+  // }
+
+  responseJSON.message = 'Queried successfully';
+  return respondJSON(request, response, 200, responseJSON);
+};
+
 // function to show not found error
 const notFound = (request, response) => {
   const responseMessage = {
@@ -173,4 +199,5 @@ module.exports = {
   getMealsMeta,
   removeMeal,
   addUser,
+  searchMeals,
 };

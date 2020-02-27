@@ -19,20 +19,33 @@ var parseJSON = function parseJSON(xhr, content, form) {
         p.className = "content-warning";
         content.appendChild(p);
       }
-    }
+    } // if all meals returned, print all meals to the page
+
+
+    if (obj.meals) {
+      for (var day in obj.meals) {
+        for (var meal in obj.meals[day]) {
+          var mealObj = obj.meals[day][meal];
+          var specificDayCard = form.querySelector("#".concat(mealObj.day.toLowerCase()));
+          var pTag = specificDayCard.querySelector("#".concat(mealObj.mealType.toLowerCase()));
+          pTag.textContent = " ".concat(mealObj.title);
+        }
+      }
+    } // if one meal returned, print meal data to page
+
 
     if (obj.meal) {
-      var day = obj.meal.day;
+      var _day = obj.meal.day;
       var mealType = obj.meal.mealType;
-      var specificDayCard = form.querySelector("#".concat(day.toLowerCase()));
-      var pTag = specificDayCard.querySelector("#".concat(mealType.toLowerCase()));
+
+      var _specificDayCard = form.querySelector("#".concat(_day.toLowerCase()));
+
+      var _pTag = _specificDayCard.querySelector("#".concat(mealType.toLowerCase()));
 
       if (xhr.status === 201) {
-        pTag.textContent += " ".concat(obj.meal.title);
+        _pTag.textContent += " ".concat(obj.meal.title);
       } else if (xhr.status === 200) {
-        var mealTypeDesc = pTag.textContent.split(":");
-        pTag.textContent = "";
-        pTag.textContent += "".concat(mealTypeDesc[0], ": ").concat(obj.meal.title);
+        _pTag.textContent = " ".concat(obj.meal.title);
       }
     } //if users in response, add to screen
 
@@ -75,43 +88,54 @@ var sendAjax = function sendAjax(e, form) {
   //cancel browser's default action
   e.preventDefault(); // get the method from the form
 
-  var method = form.getAttribute('method'); // variables for request
+  var method = form.getAttribute('method');
+  var url = form.getAttribute('action'); // variables for request
 
-  var url = '/';
-  var methodSelect = method;
   var data = '';
+  var params = '';
+  var dayField = form.querySelector('#dayField');
+  var mealTypeField = form.querySelector('#mealTypeField');
 
   if (method === 'post') {
-    url = form.getAttribute('action'); // get data to send
-
+    // get data to send
     var titleField = form.querySelector('#titleField');
-    var dayField = form.querySelector('#dayField');
-    var mealTypeField = form.querySelector('#mealTypeField');
-    data = "title=".concat(titleField.value, "&mealType=").concat(mealTypeField.options[mealTypeField.selectedIndex].value, "&day=").concat(dayField.options[dayField.selectedIndex].value); // const dateField = form.querySelector('#dateField');
-    // data = `title=${titleField.value}&date=${dateField.value}`;
+    data = "title=".concat(titleField.value, "&mealType=").concat(mealTypeField.options[mealTypeField.selectedIndex].value, "&day=").concat(dayField.options[dayField.selectedIndex].value);
   } else if (method === 'get') {
-    // get selected url and method
-    url = document.querySelector('#urlField').value;
-    methodSelect = document.querySelector('#methodSelect').value.toUpperCase();
+    if (url === '/searchMeals') {
+      params = "?mealType=".concat(mealTypeField.options[mealTypeField.selectedIndex].value, "&day=").concat(dayField.options[dayField.selectedIndex].value);
+    }
   } // send request
 
 
   var xhr = new XMLHttpRequest();
-  xhr.open(methodSelect, url);
+  xhr.open(method, url + params);
   xhr.setRequestHeader("Accept", 'application/json');
 
   xhr.onload = function () {
-    return handleResponse(xhr, methodSelect);
+    return handleResponse(xhr, method);
   };
 
   xhr.send(data);
   return false;
+};
+
+var initialGet = function initialGet(method, url) {
+  var xhr = new XMLHttpRequest();
+  xhr.open(method, url);
+  xhr.setRequestHeader("Accept", 'application/json');
+
+  xhr.onload = function () {
+    return handleResponse(xhr, method);
+  };
+
+  xhr.send();
 }; // initialization
 
 
 var init = function init() {
   var addMealForm = document.querySelector("#addMealForm");
   var mealForm = document.querySelector("#mealForm");
+  var searchMealsForm = document.querySelector("#searchMealsForm");
 
   var addMeal = function addMeal(e) {
     return sendAjax(e, addMealForm);
@@ -121,8 +145,14 @@ var init = function init() {
     return sendAjax(e, mealForm);
   };
 
+  var searchMeals = function searchMeals(e) {
+    return sendAjax(e, searchMealsForm);
+  };
+
   addMealForm.addEventListener('submit', addMeal);
   mealForm.addEventListener('submit', getMeals);
+  searchMealsForm.addEventListener('submit', searchMeals);
+  initialGet('GET', '/getMeals');
 };
 
 window.onload = init;
