@@ -19,6 +19,31 @@
         }
       } 
 
+      // if cleared button is clicked, clear everything on the page
+      if(obj.cleared) {
+        // get meal p tags and clear them
+        var mealItems = document.querySelectorAll(".mealText");
+
+        for(var i = 0; i < mealItems.length; i++) {
+          mealItems[i].textContent = "";
+        }
+
+        // get input stuff and clear them 
+        const dayFields = document.querySelectorAll('#dayField');
+        const mealTypeFields = document.querySelectorAll('#mealTypeField');
+
+        for(var i = 0; i < dayFields.length; i++) {
+          dayFields[i].selectedIndex = 0;
+        }
+
+        for(var i = 0; i < mealTypeFields.length; i++) {
+          mealTypeFields[i].selectedIndex = 0;
+        }
+
+        const titleField = document.querySelector('#titleField');
+        titleField.value = "";
+      }
+
       // if all meals returned, print all meals to the page
       if(obj.meals) {
         for(let day in obj.meals){
@@ -133,14 +158,17 @@
     const addMealForm = document.querySelector("#addMealForm");
     const mealForm = document.querySelector("#mealForm");
     const searchMealsForm = document.querySelector("#searchMealsForm");
+    const clearMealsForm = document.querySelector("#clearMealsForm");
 
     let addMeal = (e) => sendAjax(e, addMealForm);
     let getMeals = (e) => sendAjax(e, mealForm);
     let searchMeals = (e) => sendAjax(e, searchMealsForm);
+    let clearMeals = (e) => sendAjax(e, clearMealsForm);
 
     addMealForm.addEventListener('submit', addMeal);
     mealForm.addEventListener('submit', getMeals);
     searchMealsForm.addEventListener('submit', searchMeals);
+    clearMealsForm.addEventListener('submit', clearMeals);
 
     initialGet('GET', '/getMeals');
   };

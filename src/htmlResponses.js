@@ -3,6 +3,7 @@ const fs = require('fs');
 const index = fs.readFileSync(`${__dirname}/../hosted/client.html`);
 const css = fs.readFileSync(`${__dirname}/../hosted/style.css`);
 const jsBundle = fs.readFileSync(`${__dirname}/../hosted/bundle.js`);
+const firebase = fs.readFileSync(`${__dirname}/../src/firebase.js`);
 
 // get's the client / index page
 const getIndex = (request, response) => {
@@ -18,6 +19,13 @@ const getBundle = (request, response) => {
   response.end();
 };
 
+// gets the firebase js file
+const getFirebase = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'application/javascript' });
+  response.write(firebase);
+  response.end();
+};
+
 // gets the style.css file
 const getCSS = (request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/css' });
@@ -28,3 +36,4 @@ const getCSS = (request, response) => {
 module.exports.getIndex = getIndex;
 module.exports.getCSS = getCSS;
 module.exports.getBundle = getBundle;
+module.exports.getFirebase = getFirebase;

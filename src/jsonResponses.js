@@ -1,5 +1,8 @@
+// const firbase = require('../src/firebase.js');
+// const database = firbase.app.database();
+
 const users = {};
-const meals = {};
+let meals = {};
 
 // function to send a json object
 const respondJSON = (request, response, status, object) => {
@@ -154,11 +157,13 @@ const searchMeals = (request, response, params) => {
     message: 'Meal type and day parameters required.',
   };
 
-  console.dir(params);
-
   if (!params.mealType && !params.day) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
+  }
+
+  if (params.mealType === 'all' && params.day === 'all') {
+    responseJSON.meals = meals;
   }
 
   // if (params.mealType === 'none') {
@@ -171,6 +176,19 @@ const searchMeals = (request, response, params) => {
   // }
 
   responseJSON.message = 'Queried successfully';
+  return respondJSON(request, response, 200, responseJSON);
+};
+
+// clear the meals from the list
+const clearMeals = (request, response) => {
+  const responseJSON = {
+    message: 'Successfully cleared meal list',
+  };
+
+  meals = {};
+
+  responseJSON.cleared = true;
+
   return respondJSON(request, response, 200, responseJSON);
 };
 
@@ -198,6 +216,7 @@ module.exports = {
   getMeals,
   getMealsMeta,
   removeMeal,
+  clearMeals,
   addUser,
   searchMeals,
 };

@@ -30,6 +30,10 @@ body {
   display: inline;
 }
 
+#clearButton {
+  float:left;
+}
+
 h3 {
   text-align: center;
 }

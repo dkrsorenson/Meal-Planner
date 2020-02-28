@@ -19,6 +19,31 @@ var parseJSON = function parseJSON(xhr, content, form) {
         p.className = "content-warning";
         content.appendChild(p);
       }
+    } // if cleared button is clicked, clear everything on the page
+
+
+    if (obj.cleared) {
+      // get meal p tags and clear them
+      var mealItems = document.querySelectorAll(".mealText");
+
+      for (var i = 0; i < mealItems.length; i++) {
+        mealItems[i].textContent = "";
+      } // get input stuff and clear them 
+
+
+      var dayFields = document.querySelectorAll('#dayField');
+      var mealTypeFields = document.querySelectorAll('#mealTypeField');
+
+      for (var i = 0; i < dayFields.length; i++) {
+        dayFields[i].selectedIndex = 0;
+      }
+
+      for (var i = 0; i < mealTypeFields.length; i++) {
+        mealTypeFields[i].selectedIndex = 0;
+      }
+
+      var titleField = document.querySelector('#titleField');
+      titleField.value = "";
     } // if all meals returned, print all meals to the page
 
 
@@ -136,6 +161,7 @@ var init = function init() {
   var addMealForm = document.querySelector("#addMealForm");
   var mealForm = document.querySelector("#mealForm");
   var searchMealsForm = document.querySelector("#searchMealsForm");
+  var clearMealsForm = document.querySelector("#clearMealsForm");
 
   var addMeal = function addMeal(e) {
     return sendAjax(e, addMealForm);
@@ -149,9 +175,14 @@ var init = function init() {
     return sendAjax(e, searchMealsForm);
   };
 
+  var clearMeals = function clearMeals(e) {
+    return sendAjax(e, clearMealsForm);
+  };
+
   addMealForm.addEventListener('submit', addMeal);
   mealForm.addEventListener('submit', getMeals);
   searchMealsForm.addEventListener('submit', searchMeals);
+  clearMealsForm.addEventListener('submit', clearMeals);
   initialGet('GET', '/getMeals');
 };
 

@@ -3,13 +3,20 @@
 <head>
   <title>Our simple HTTP server</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase.js"></script> -->
+  <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-app.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/7.91/firebase-database.js"></script> -->
+  <script src="firebase.js"></script>
   <script src="bundle.js"> </script>
-  
+
 </head>
 <body>
   <section id="top">
+    <form id="clearMealsForm" action="/clearMeals" method="get">
+      <input type="submit" value="Clear" class="button" id="clearButton"/>
+    </form>
     <h1>Weekly Meal Planner</h1>
     <form id="addMealForm" action="/addMeal" method="post">
       <label for="title">Title: </label>
@@ -40,7 +47,7 @@
     <form id="searchMealsForm" action="/searchMeals" method="get">
       <label for="type">Type: </label>
       <select id="mealTypeField" class="select">
-        <option value="none">None</option>
+        <option value="all">(All)</option>
         <option value="breakfast">Breakfast</option>
         <option value="lunch">Lunch</option>
         <option value="dinner">Dinner</option>
@@ -50,7 +57,7 @@
       </select>
       <label for="day">Day: </label>
       <select id="dayField" class="select">
-        <option value="none">None</option>
+        <option value="all">(All)</option>
         <option value="sunday">Sunday</option>
         <option value="monday">Monday</option>
         <option value="tuesday">Tuesday</option>
