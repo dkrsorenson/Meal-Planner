@@ -4,10 +4,12 @@
         content.removeChild(content.firstChild);
     }
 
+    // make sure there is a response
     if(xhr.response) {
       const obj = JSON.parse(xhr.response);
       console.dir(obj);
 
+      // reset mealform to show by default
       const mealForm = document.querySelector("#mealForm");
       mealForm.style.display = 'block';
 
@@ -79,6 +81,7 @@
         }
       }
 
+      // if filtered by specific day and/or meal type
       if(obj.filteredBy) {
         const mealForm = document.querySelector("#mealForm");
         mealForm.style.display = 'none';
@@ -90,6 +93,7 @@
         const children = div.querySelectorAll('p');
         div.innerHTML = '';
 
+        // set the title for the meal (show day or meal type that was queried by)
         const title = document.createElement('h3');
         title.textContent = 'Meals'
         div.appendChild(title);
@@ -101,14 +105,19 @@
           title.textContent += ` - ${obj.day}`;
         }
 
+        // loop over the list of filtered meals and add them to the page
         for (let meal in obj.filteredMeals){
           const titleTag = document.createElement('p');
           const mealTag = document.createElement('p');
           const br = document.createElement('br');
+          const br2 = document.createElement('br');
+
+          meal = meal.split(' ').join('');
 
           titleTag.className = 'mealTitle';
           mealTag.className = 'mealText';
 
+          // set the titles and meal tags based on how it was queried 
           if(obj.filteredBy === 'meal'){
             titleTag.textContent = `${obj.filteredMeals[meal].day}: `;
             mealTag.textContent = obj.filteredMeals[meal].mealTitle;
@@ -119,23 +128,19 @@
           }
           else if(obj.filteredBy === 'both') {
             titleTag.textContent = `${obj.filteredMeals[meal].day}, ${obj.filteredMeals[meal].mealType}: `;
-            div.appendChild(br);
             mealTag.textContent = obj.filteredMeals[meal].mealTitle;
           }
 
+          // append everything to the card
           div.appendChild(titleTag);
+
+          if(obj.filteredBy === 'both'){
+            div.appendChild(br2);
+          }
+
           div.appendChild(mealTag);
           div.appendChild(br);
         }
-      }
-    
-      //if users in response, add to screen
-      if(obj.users) {
-        console.dir(obj.users);
-        const userList = document.createElement('p');
-        const users = JSON.stringify(obj.users);
-        userList.textContent = users;
-        content.appendChild(userList);
       }
     }
   };
@@ -201,6 +206,7 @@
     return false;
   };
 
+  // function to get the initial data
   const initialGet = (method, url) => {
     const xhr = new XMLHttpRequest();
     xhr.open(method, url);
@@ -211,22 +217,27 @@
 
   // initialization
   const init = () => {
+    // get all forms
     const addMealForm = document.querySelector("#addMealForm");
     const mealForm = document.querySelector("#mealForm");
     const searchMealsForm = document.querySelector("#searchMealsForm");
     const clearMealsForm = document.querySelector("#clearMealsForm");
 
+    // ajax setup
     let addMeal = (e) => sendAjax(e, addMealForm);
     let getMeals = (e) => sendAjax(e, mealForm);
     let searchMeals = (e) => sendAjax(e, searchMealsForm);
     let clearMeals = (e) => sendAjax(e, clearMealsForm);
 
+    // add the listeners for different events
     addMealForm.addEventListener('submit', addMeal);
     mealForm.addEventListener('submit', getMeals);
     searchMealsForm.addEventListener('submit', searchMeals);
     clearMealsForm.addEventListener('submit', clearMeals);
 
+    // get data on init
     initialGet('GET', '/getMeals');
   };
 
+  // load window
   window.onload = init;

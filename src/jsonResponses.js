@@ -1,8 +1,30 @@
-// const firbase = require('../src/firebase.js');
-// const database = firbase.app.database();
+var firebase = require("firebase/app");
+require('firebase/database');
 
-const users = {};
-let meals = {};
+const firebaseConfig = {
+  apiKey: 'AIzaSyD6QdTTDlDOd3j3GkPf5JY0UuUt8ymZwuc',
+  authDomain: 'mealplannerapi.firebaseapp.com',
+  databaseURL: 'https://mealplannerapi.firebaseio.com',
+  projectId: 'mealplannerapi',
+  storageBucket: 'mealplannerapi.appspot.com',
+  messagingSenderId: '949635943724',
+  appId: '1:949635943724:web:1817c4fd0b7b02e44bf089',
+  measurementId: 'G-7JLFZW63T9',
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+const database = app.database();
+
+// function to get the meal data from firebase
+const getMealsFirebaseData = () => {
+  return firebase.database().ref('/meals').once('value').then(function(snapshot) {
+    let mealData = (snapshot.val()) || {};
+    meals = mealData;
+  });
+}
+
+// meals object
+let meals = getMealsFirebaseData();
 
 // function to send a json object
 const respondJSON = (request, response, status, object) => {
@@ -39,47 +61,6 @@ const getUsers = (request, response) => {
   return respondJSON(request, response, 200, responseJSON);
 };
 
-// function to get meta info about users
-const getUsersMeta = (request, response) => {
-  // return 200 without message, just the meta data
-  respondJSONMeta(request, response, 200);
-};
-
-// function to add a user
-const addUser = (request, response, body) => {
-  const responseJSON = {
-    message: 'Name and age are both required.',
-  };
-
-  if (!body.name || !body.password) {
-    responseJSON.id = 'missingParams';
-    return respondJSON(request, response, 400, responseJSON);
-  }
-
-  // default status code to 201 created
-  let responseCode = 201;
-
-  // if that user's name already exists in our object, switch to a 204 updated status
-  if (users[body.name]) {
-    responseCode = 204;
-  } else {
-    users[body.name] = {};
-  }
-
-  // add or update fields for this user name
-  users[body.name].name = body.name;
-  users[body.name].password = body.password;
-
-  // if response is created, then set our created message
-  if (responseCode === 201) {
-    responseJSON.message = 'Created Successfully';
-    return respondJSON(request, response, responseCode, responseJSON);
-  }
-
-  // send 204 if user already exists
-  return respondJSONMeta(request, response, responseCode);
-};
-
 // function to add a new meal
 const addMeal = (request, response, body) => {
   const responseJSON = {
@@ -87,6 +68,7 @@ const addMeal = (request, response, body) => {
     message: 'Title, meal type, and day parameters required.',
   };
 
+  // ensure they used the params
   if (body != null) {
     if (!body.title || !body.mealType || !body.day) {
       responseJSON.id = 'missingParams';
@@ -99,19 +81,30 @@ const addMeal = (request, response, body) => {
 
   let responseCode = 201;
 
+  // if there is not an entry for this day, create empty object
   if (!meals[body.day]) {
     meals[body.day] = {};
   }
 
+  // if there is not an entry for this day/meal type, create an empty object
+  // otherwise set the response code to 200 for an update
   if (!meals[body.day][body.mealType]) {
     meals[body.day][body.mealType] = {};
   } else {
     responseCode = 200;
   }
 
+  // set the values
   meals[body.day][body.mealType].title = body.title;
   meals[body.day][body.mealType].day = body.day;
   meals[body.day][body.mealType].mealType = body.mealType;
+
+  // update the data in firebase
+  firebase.database().ref(`meals/${body.day}/${body.mealType}`).set({
+    title: body.title,
+    day: body.day,
+    mealType : body.mealType,
+  });
 
   // if response is created, then set our created message
   if (responseCode === 201) {
@@ -120,6 +113,7 @@ const addMeal = (request, response, body) => {
     return respondJSON(request, response, responseCode, responseJSON);
   }
 
+  // send back a message with the udpate meal
   responseJSON.message = 'Updated meal successfully.';
   responseJSON.meal = meals[body.day][body.mealType];
   return respondJSON(request, response, responseCode, responseJSON);
@@ -144,30 +138,26 @@ const getMealsMeta = (request, response) => {
   respondJSONMeta(request, response, 200);
 };
 
-// function to remove a meal from the list
-const removeMeal = (request, response, body) => {
-  meals[body.id] = {};
-
-  return respondJSONMeta(request, response, 204);
-};
-
 // function to query the meals for specific data
 const searchMeals = (request, response, params) => {
   const responseJSON = {
     message: 'Meal type and day parameters required.',
   };
 
+  // ensure there are meal type and day parameters
   if (!params.mealType && !params.day) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
+  // if they clicked the filter button for all meal types and days, just return the whole meals object
   if (params.mealType === 'all' && params.day === 'all') {
     responseJSON.meals = meals;
     responseJSON.message = 'Queried successfully';
     return respondJSON(request, response, 200, responseJSON);
   }
 
+  // if they queried for all days for a specfic meal type
   if (params.day === 'all') {
     responseJSON.filteredBy = 'meal';
     responseJSON.mealType = params.mealType.charAt(0).toUpperCase() + params.mealType.slice(1);
@@ -191,7 +181,7 @@ const searchMeals = (request, response, params) => {
         mealTitle,
       };
     }
-  } else if (params.mealType === 'all') {
+  } else if (params.mealType === 'all') { // if they queried for all meal types for a specfic day
     responseJSON.filteredBy = 'day';
     responseJSON.day = params.day.charAt(0).toUpperCase() + params.day.slice(1);
     responseJSON.filteredMeals = {};
@@ -200,7 +190,7 @@ const searchMeals = (request, response, params) => {
 
     for (let i = 0; i < mealTypes.length; i++) {
       let mealTitle = '';
-      const mealType = mealTypes[i];
+      const mealType = mealTypes[i].split(' ').join('');
       if (meals[params.day]) {
         if (meals[params.day][mealType]) {
           mealTitle = meals[params.day][mealType].title;
@@ -213,7 +203,7 @@ const searchMeals = (request, response, params) => {
         mealTitle,
       };
     }
-  } else {
+  } else { // if they queried for a specific day and for a specfic meal type
     responseJSON.filteredBy = 'both';
     responseJSON.filteredMeals = {};
 
@@ -231,6 +221,7 @@ const searchMeals = (request, response, params) => {
     };
   }
 
+  // send the response
   responseJSON.message = 'Queried successfully';
   return respondJSON(request, response, 200, responseJSON);
 };
@@ -241,7 +232,9 @@ const clearMeals = (request, response) => {
     message: 'Successfully cleared meal list',
   };
 
+  // clear the meals object and the database meals list
   meals = {};
+  database.ref('meals/').remove();
 
   responseJSON.cleared = true;
 
@@ -266,13 +259,9 @@ const notFoundMeta = (request, response) => {
 module.exports = {
   notFound,
   notFoundMeta,
-  getUsers,
-  getUsersMeta,
   addMeal,
   getMeals,
   getMealsMeta,
-  removeMeal,
   clearMeals,
-  addUser,
   searchMeals,
 };

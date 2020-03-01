@@ -4,11 +4,13 @@
 var parseJSON = function parseJSON(xhr, content, form) {
   if (content.hasChildNodes()) {
     content.removeChild(content.firstChild);
-  }
+  } // make sure there is a response
+
 
   if (xhr.response) {
     var obj = JSON.parse(xhr.response);
-    console.dir(obj);
+    console.dir(obj); // reset mealform to show by default
+
     var mealForm = document.querySelector("#mealForm");
     mealForm.style.display = 'block';
     var filteredMealForm = document.querySelector("#filteredMealForm");
@@ -76,7 +78,8 @@ var parseJSON = function parseJSON(xhr, content, form) {
       } else if (xhr.status === 200) {
         _pTag.textContent = " ".concat(obj.meal.title);
       }
-    }
+    } // if filtered by specific day and/or meal type
+
 
     if (obj.filteredBy) {
       var _mealForm = document.querySelector("#mealForm");
@@ -88,7 +91,8 @@ var parseJSON = function parseJSON(xhr, content, form) {
       _filteredMealForm.style.display = 'block';
       var div = document.getElementById('filteredMealDiv');
       var children = div.querySelectorAll('p');
-      div.innerHTML = '';
+      div.innerHTML = ''; // set the title for the meal (show day or meal type that was queried by)
+
       var title = document.createElement('h3');
       title.textContent = 'Meals';
       div.appendChild(title);
@@ -97,14 +101,17 @@ var parseJSON = function parseJSON(xhr, content, form) {
         title.textContent += " - ".concat(obj.mealType);
       } else if (obj.filteredBy === 'day') {
         title.textContent += " - ".concat(obj.day);
-      }
+      } // loop over the list of filtered meals and add them to the page
+
 
       for (var _meal in obj.filteredMeals) {
         var titleTag = document.createElement('p');
         var mealTag = document.createElement('p');
         var br = document.createElement('br');
+        var br2 = document.createElement('br');
+        _meal = _meal.split(' ').join('');
         titleTag.className = 'mealTitle';
-        mealTag.className = 'mealText';
+        mealTag.className = 'mealText'; // set the titles and meal tags based on how it was queried 
 
         if (obj.filteredBy === 'meal') {
           titleTag.textContent = "".concat(obj.filteredMeals[_meal].day, ": ");
@@ -114,23 +121,19 @@ var parseJSON = function parseJSON(xhr, content, form) {
           mealTag.textContent = obj.filteredMeals[_meal].mealTitle;
         } else if (obj.filteredBy === 'both') {
           titleTag.textContent = "".concat(obj.filteredMeals[_meal].day, ", ").concat(obj.filteredMeals[_meal].mealType, ": ");
-          div.appendChild(br);
           mealTag.textContent = obj.filteredMeals[_meal].mealTitle;
-        }
+        } // append everything to the card
+
 
         div.appendChild(titleTag);
+
+        if (obj.filteredBy === 'both') {
+          div.appendChild(br2);
+        }
+
         div.appendChild(mealTag);
         div.appendChild(br);
       }
-    } //if users in response, add to screen
-
-
-    if (obj.users) {
-      console.dir(obj.users);
-      var userList = document.createElement('p');
-      var users = JSON.stringify(obj.users);
-      userList.textContent = users;
-      content.appendChild(userList);
     }
   }
 }; // list of status titles to print to the screen
@@ -192,7 +195,8 @@ var sendAjax = function sendAjax(e, form) {
 
   xhr.send(data);
   return false;
-};
+}; // function to get the initial data
+
 
 var initialGet = function initialGet(method, url) {
   var xhr = new XMLHttpRequest();
@@ -208,10 +212,11 @@ var initialGet = function initialGet(method, url) {
 
 
 var init = function init() {
+  // get all forms
   var addMealForm = document.querySelector("#addMealForm");
   var mealForm = document.querySelector("#mealForm");
   var searchMealsForm = document.querySelector("#searchMealsForm");
-  var clearMealsForm = document.querySelector("#clearMealsForm");
+  var clearMealsForm = document.querySelector("#clearMealsForm"); // ajax setup
 
   var addMeal = function addMeal(e) {
     return sendAjax(e, addMealForm);
@@ -227,13 +232,16 @@ var init = function init() {
 
   var clearMeals = function clearMeals(e) {
     return sendAjax(e, clearMealsForm);
-  };
+  }; // add the listeners for different events
+
 
   addMealForm.addEventListener('submit', addMeal);
   mealForm.addEventListener('submit', getMeals);
   searchMealsForm.addEventListener('submit', searchMeals);
-  clearMealsForm.addEventListener('submit', clearMeals);
+  clearMealsForm.addEventListener('submit', clearMeals); // get data on init
+
   initialGet('GET', '/getMeals');
-};
+}; // load window
+
 
 window.onload = init;

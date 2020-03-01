@@ -13,9 +13,6 @@ const urlStruct = {
     '/': htmlHandler.getIndex,
     '/style.css': htmlHandler.getCSS,
     '/bundle.js': htmlHandler.getBundle,
-    '/firebase.js': htmlHandler.getFirebase,
-    '/getUsers': jsonHandler.getUsers,
-    '/addUser': jsonHandler.addUser,
     '/addMeal': jsonHandler.addMeal,
     '/getMeals': jsonHandler.getMeals,
     '/removeMeal': jsonHandler.removeMeal,
@@ -25,10 +22,9 @@ const urlStruct = {
     notFound: jsonHandler.notFound,
   },
   HEAD: {
-    '/getUsers': jsonHandler.getUsersMeta,
     '/getMeals': jsonHandler.getMealsMeta,
     '/notReal': jsonHandler.notFoundMeta,
-    notFound: jsonHandler.getUsersMeta,
+    notFound: jsonHandler.notFoundMeta,
   },
 };
 
@@ -47,14 +43,7 @@ const handlePost = (request, response, parsedUrl) => {
     body.push(chunk);
   });
 
-  if (parsedUrl.pathname === '/addUser') {
-    request.on('end', () => {
-      const bodyString = Buffer.concat(body).toString();
-      const bodyParams = query.parse(bodyString);
-
-      jsonHandler.addUser(request, res, bodyParams);
-    });
-  } else if (parsedUrl.pathname === '/addMeal') {
+  if (parsedUrl.pathname === '/addMeal') {
     request.on('end', () => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString);
