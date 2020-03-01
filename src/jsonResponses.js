@@ -164,17 +164,77 @@ const searchMeals = (request, response, params) => {
 
   if (params.mealType === 'all' && params.day === 'all') {
     responseJSON.meals = meals;
+    responseJSON.message = 'Queried successfully';
+    return respondJSON(request, response, 200, responseJSON);
   }
 
-  // if (params.mealType === 'none') {
+  if (params.day === 'all') {
+    responseJSON.filteredBy = 'meal';
+    responseJSON.mealType = params.mealType.charAt(0).toUpperCase() + params.mealType.slice(1);
+    responseJSON.filteredMeals = {};
 
-  // }
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
+    for(var index in days) {
+      let mealTitle = '';
+      const day = days[index];
 
-  // if (params.day === 'none') {
+      if(meals[day]){
+        if(meals[day][params.mealType]){
+          mealTitle = meals[day][params.mealType].title;
+        }
+      }
 
-  // }
+      responseJSON.filteredMeals[day] = {
+        mealType: params.mealType,
+        day: day.charAt(0).toUpperCase() + day.slice(1),
+        mealTitle: mealTitle,
+      }
+    }
+  } else if (params.mealType === 'all') {
+    responseJSON.filteredBy = 'day';
+    responseJSON.day = params.day.charAt(0).toUpperCase() + params.day.slice(1);
+    responseJSON.filteredMeals = {};
 
+    const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack 1', 'snack 2', 'snack 3'];
+
+    for(var index in mealTypes) {
+      let mealTitle = '';
+      const mealType = mealTypes[index];
+      console.dir(mealType);
+      if(meals[params.day]){
+        if(meals[params.day][mealType]){
+          mealTitle = meals[params.day][mealType].title;
+        }
+      }
+
+      responseJSON.filteredMeals[mealType] = {
+        mealType: mealType.charAt(0).toUpperCase() + mealType.slice(1),
+        day: params.day.charAt(0).toUpperCase() + params.day.slice(1),
+        mealTitle: mealTitle,
+      }
+
+      console.dir(responseJSON.filteredMeals);
+    }
+  }
+  else {
+    responseJSON.filteredBy = 'both';
+    responseJSON.filteredMeals = {};
+
+    let mealTitle = '';
+    if(meals[params.day]){
+      if(meals[params.day][params.mealType]){
+        mealTitle = meals[params.day][params.mealType].title;
+      }
+    }
+
+    responseJSON.filteredMeals[params.day] = {
+      mealType: params.mealType.charAt(0).toUpperCase() + params.mealType.slice(1),
+      day: params.day.charAt(0).toUpperCase() + params.day.slice(1),
+      mealTitle: mealTitle
+    }
+  }
+  
   responseJSON.message = 'Queried successfully';
   return respondJSON(request, response, 200, responseJSON);
 };

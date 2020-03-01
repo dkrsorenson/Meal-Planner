@@ -34,6 +34,10 @@ body {
   float:left;
 }
 
+#filteredMealForm {
+  display: none;
+}
+
 h3 {
   text-align: center;
 }

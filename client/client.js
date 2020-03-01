@@ -7,11 +7,17 @@
     if(xhr.response) {
       const obj = JSON.parse(xhr.response);
       console.dir(obj);
+
+      const mealForm = document.querySelector("#mealForm");
+      mealForm.style.display = 'block';
+
+      const filteredMealForm = document.querySelector("#filteredMealForm");
+      filteredMealForm.style.display = 'none';
     
       //if message in response, add to screen
       if(obj.message) {
         console.dir(obj.message);
-        if(xhr.status === 400){
+        if(xhr.status === 400) {
             const p = document.createElement('p');
             p.textContent = `${obj.message}`;
             p.className = "content-warning";
@@ -70,6 +76,58 @@
         }
         else if(xhr.status === 200){
             pTag.textContent = ` ${obj.meal.title}`;
+        }
+      }
+
+      if(obj.filteredBy) {
+        const mealForm = document.querySelector("#mealForm");
+        mealForm.style.display = 'none';
+
+        const filteredMealForm = document.querySelector("#filteredMealForm");
+        filteredMealForm.style.display = 'block';
+
+        const div = document.getElementById('filteredMealDiv');
+        const children = div.querySelectorAll('p');
+        div.innerHTML = '';
+
+        const title = document.createElement('h3');
+        title.textContent = 'Meals'
+        div.appendChild(title);
+
+        if(obj.filteredBy === 'meal'){
+          title.textContent += ` - ${obj.mealType}`;
+        }
+        else if(obj.filteredBy === 'day'){
+          title.textContent += ` - ${obj.day}`;
+        }
+
+        console.dir(obj.filteredMeals);
+
+        for (var meal in obj.filteredMeals){
+          const titleTag = document.createElement('p');
+          const mealTag = document.createElement('p');
+          const br = document.createElement('br');
+
+          titleTag.className = 'mealTitle';
+          mealTag.className = 'mealText';
+
+          if(obj.filteredBy === 'meal'){
+            titleTag.textContent = `${obj.filteredMeals[meal].day}: `;
+            mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+          }
+          else if(obj.filteredBy === 'day'){
+            titleTag.textContent = `${obj.filteredMeals[meal].mealType}: `;
+            mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+          }
+          else if(obj.filteredBy === 'both') {
+            titleTag.textContent = `${obj.filteredMeals[meal].day}, ${obj.filteredMeals[meal].mealType}: `;
+            div.appendChild(br);
+            mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+          }
+
+          div.appendChild(titleTag);
+          div.appendChild(mealTag);
+          div.appendChild(br);
         }
       }
     

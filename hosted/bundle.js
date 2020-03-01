@@ -8,7 +8,11 @@ var parseJSON = function parseJSON(xhr, content, form) {
 
   if (xhr.response) {
     var obj = JSON.parse(xhr.response);
-    console.dir(obj); //if message in response, add to screen
+    console.dir(obj);
+    var mealForm = document.querySelector("#mealForm");
+    mealForm.style.display = 'block';
+    var filteredMealForm = document.querySelector("#filteredMealForm");
+    filteredMealForm.style.display = 'none'; //if message in response, add to screen
 
     if (obj.message) {
       console.dir(obj.message);
@@ -49,8 +53,8 @@ var parseJSON = function parseJSON(xhr, content, form) {
 
     if (obj.meals) {
       for (var day in obj.meals) {
-        for (var meal in obj.meals[day]) {
-          var mealObj = obj.meals[day][meal];
+        for (var _meal in obj.meals[day]) {
+          var mealObj = obj.meals[day][_meal];
           var specificDayCard = form.querySelector("#".concat(mealObj.day.toLowerCase()));
           var pTag = specificDayCard.querySelector("#".concat(mealObj.mealType.toLowerCase()));
           pTag.textContent = " ".concat(mealObj.title);
@@ -71,6 +75,54 @@ var parseJSON = function parseJSON(xhr, content, form) {
         _pTag.textContent += " ".concat(obj.meal.title);
       } else if (xhr.status === 200) {
         _pTag.textContent = " ".concat(obj.meal.title);
+      }
+    }
+
+    if (obj.filteredBy) {
+      var _mealForm = document.querySelector("#mealForm");
+
+      _mealForm.style.display = 'none';
+
+      var _filteredMealForm = document.querySelector("#filteredMealForm");
+
+      _filteredMealForm.style.display = 'block';
+      var div = document.getElementById('filteredMealDiv');
+      var children = div.querySelectorAll('p');
+      div.innerHTML = '';
+      var title = document.createElement('h3');
+      title.textContent = 'Meals';
+      div.appendChild(title);
+
+      if (obj.filteredBy === 'meal') {
+        title.textContent += " - ".concat(obj.mealType);
+      } else if (obj.filteredBy === 'day') {
+        title.textContent += " - ".concat(obj.day);
+      }
+
+      console.dir(obj.filteredMeals);
+
+      for (var meal in obj.filteredMeals) {
+        var titleTag = document.createElement('p');
+        var mealTag = document.createElement('p');
+        var br = document.createElement('br');
+        titleTag.className = 'mealTitle';
+        mealTag.className = 'mealText';
+
+        if (obj.filteredBy === 'meal') {
+          titleTag.textContent = "".concat(obj.filteredMeals[meal].day, ": ");
+          mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+        } else if (obj.filteredBy === 'day') {
+          titleTag.textContent = "".concat(obj.filteredMeals[meal].mealType, ": ");
+          mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+        } else if (obj.filteredBy === 'both') {
+          titleTag.textContent = "".concat(obj.filteredMeals[meal].day, ", ").concat(obj.filteredMeals[meal].mealType, ": ");
+          div.appendChild(br);
+          mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+        }
+
+        div.appendChild(titleTag);
+        div.appendChild(mealTag);
+        div.appendChild(br);
       }
     } //if users in response, add to screen
 
