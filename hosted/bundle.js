@@ -38,12 +38,12 @@ var parseJSON = function parseJSON(xhr, content, form) {
       var dayFields = document.querySelectorAll('#dayField');
       var mealTypeFields = document.querySelectorAll('#mealTypeField');
 
-      for (var i = 0; i < dayFields.length; i++) {
-        dayFields[i].selectedIndex = 0;
+      for (var _i = 0; _i < dayFields.length; _i++) {
+        dayFields[_i].selectedIndex = 0;
       }
 
-      for (var i = 0; i < mealTypeFields.length; i++) {
-        mealTypeFields[i].selectedIndex = 0;
+      for (var _i2 = 0; _i2 < mealTypeFields.length; _i2++) {
+        mealTypeFields[_i2].selectedIndex = 0;
       }
 
       var titleField = document.querySelector('#titleField');
@@ -53,8 +53,8 @@ var parseJSON = function parseJSON(xhr, content, form) {
 
     if (obj.meals) {
       for (var day in obj.meals) {
-        for (var _meal in obj.meals[day]) {
-          var mealObj = obj.meals[day][_meal];
+        for (var meal in obj.meals[day]) {
+          var mealObj = obj.meals[day][meal];
           var specificDayCard = form.querySelector("#".concat(mealObj.day.toLowerCase()));
           var pTag = specificDayCard.querySelector("#".concat(mealObj.mealType.toLowerCase()));
           pTag.textContent = " ".concat(mealObj.title);
@@ -99,9 +99,7 @@ var parseJSON = function parseJSON(xhr, content, form) {
         title.textContent += " - ".concat(obj.day);
       }
 
-      console.dir(obj.filteredMeals);
-
-      for (var meal in obj.filteredMeals) {
+      for (var _meal in obj.filteredMeals) {
         var titleTag = document.createElement('p');
         var mealTag = document.createElement('p');
         var br = document.createElement('br');
@@ -109,15 +107,15 @@ var parseJSON = function parseJSON(xhr, content, form) {
         mealTag.className = 'mealText';
 
         if (obj.filteredBy === 'meal') {
-          titleTag.textContent = "".concat(obj.filteredMeals[meal].day, ": ");
-          mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+          titleTag.textContent = "".concat(obj.filteredMeals[_meal].day, ": ");
+          mealTag.textContent = obj.filteredMeals[_meal].mealTitle;
         } else if (obj.filteredBy === 'day') {
-          titleTag.textContent = "".concat(obj.filteredMeals[meal].mealType, ": ");
-          mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+          titleTag.textContent = "".concat(obj.filteredMeals[_meal].mealType, ": ");
+          mealTag.textContent = obj.filteredMeals[_meal].mealTitle;
         } else if (obj.filteredBy === 'both') {
-          titleTag.textContent = "".concat(obj.filteredMeals[meal].day, ", ").concat(obj.filteredMeals[meal].mealType, ": ");
+          titleTag.textContent = "".concat(obj.filteredMeals[_meal].day, ", ").concat(obj.filteredMeals[_meal].mealType, ": ");
           div.appendChild(br);
-          mealTag.textContent = obj.filteredMeals[meal].mealTitle;
+          mealTag.textContent = obj.filteredMeals[_meal].mealTitle;
         }
 
         div.appendChild(titleTag);

@@ -28,9 +28,9 @@
       // if cleared button is clicked, clear everything on the page
       if(obj.cleared) {
         // get meal p tags and clear them
-        var mealItems = document.querySelectorAll(".mealText");
+        let mealItems = document.querySelectorAll(".mealText");
 
-        for(var i = 0; i < mealItems.length; i++) {
+        for(let i = 0; i < mealItems.length; i++) {
           mealItems[i].textContent = "";
         }
 
@@ -38,11 +38,11 @@
         const dayFields = document.querySelectorAll('#dayField');
         const mealTypeFields = document.querySelectorAll('#mealTypeField');
 
-        for(var i = 0; i < dayFields.length; i++) {
+        for(let i = 0; i < dayFields.length; i++) {
           dayFields[i].selectedIndex = 0;
         }
 
-        for(var i = 0; i < mealTypeFields.length; i++) {
+        for(let i = 0; i < mealTypeFields.length; i++) {
           mealTypeFields[i].selectedIndex = 0;
         }
 
@@ -101,9 +101,7 @@
           title.textContent += ` - ${obj.day}`;
         }
 
-        console.dir(obj.filteredMeals);
-
-        for (var meal in obj.filteredMeals){
+        for (let meal in obj.filteredMeals){
           const titleTag = document.createElement('p');
           const mealTag = document.createElement('p');
           const br = document.createElement('br');

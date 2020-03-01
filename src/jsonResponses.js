@@ -175,12 +175,12 @@ const searchMeals = (request, response, params) => {
 
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
-    for(var index in days) {
+    for (let i = 0; i < days.length; i++) {
       let mealTitle = '';
-      const day = days[index];
+      const day = days[i];
 
-      if(meals[day]){
-        if(meals[day][params.mealType]){
+      if (meals[day]) {
+        if (meals[day][params.mealType]) {
           mealTitle = meals[day][params.mealType].title;
         }
       }
@@ -188,8 +188,8 @@ const searchMeals = (request, response, params) => {
       responseJSON.filteredMeals[day] = {
         mealType: params.mealType,
         day: day.charAt(0).toUpperCase() + day.slice(1),
-        mealTitle: mealTitle,
-      }
+        mealTitle,
+      };
     }
   } else if (params.mealType === 'all') {
     responseJSON.filteredBy = 'day';
@@ -198,12 +198,11 @@ const searchMeals = (request, response, params) => {
 
     const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack 1', 'snack 2', 'snack 3'];
 
-    for(var index in mealTypes) {
+    for (let i = 0; i < mealTypes.length; i++) {
       let mealTitle = '';
-      const mealType = mealTypes[index];
-      console.dir(mealType);
-      if(meals[params.day]){
-        if(meals[params.day][mealType]){
+      const mealType = mealTypes[i];
+      if (meals[params.day]) {
+        if (meals[params.day][mealType]) {
           mealTitle = meals[params.day][mealType].title;
         }
       }
@@ -211,19 +210,16 @@ const searchMeals = (request, response, params) => {
       responseJSON.filteredMeals[mealType] = {
         mealType: mealType.charAt(0).toUpperCase() + mealType.slice(1),
         day: params.day.charAt(0).toUpperCase() + params.day.slice(1),
-        mealTitle: mealTitle,
-      }
-
-      console.dir(responseJSON.filteredMeals);
+        mealTitle,
+      };
     }
-  }
-  else {
+  } else {
     responseJSON.filteredBy = 'both';
     responseJSON.filteredMeals = {};
 
     let mealTitle = '';
-    if(meals[params.day]){
-      if(meals[params.day][params.mealType]){
+    if (meals[params.day]) {
+      if (meals[params.day][params.mealType]) {
         mealTitle = meals[params.day][params.mealType].title;
       }
     }
@@ -231,10 +227,10 @@ const searchMeals = (request, response, params) => {
     responseJSON.filteredMeals[params.day] = {
       mealType: params.mealType.charAt(0).toUpperCase() + params.mealType.slice(1),
       day: params.day.charAt(0).toUpperCase() + params.day.slice(1),
-      mealTitle: mealTitle
-    }
+      mealTitle,
+    };
   }
-  
+
   responseJSON.message = 'Queried successfully';
   return respondJSON(request, response, 200, responseJSON);
 };
