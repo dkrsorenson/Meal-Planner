@@ -15,7 +15,6 @@ const urlStruct = {
     '/bundle.js': htmlHandler.getBundle,
     '/addMeal': jsonHandler.addMeal,
     '/getMeals': jsonHandler.getMeals,
-    '/removeMeal': jsonHandler.removeMeal,
     '/searchMeals': jsonHandler.searchMeals,
     '/clearMeals': jsonHandler.clearMeals,
     '/notReal': jsonHandler.notFound,
