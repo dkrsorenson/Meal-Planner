@@ -1,4 +1,4 @@
-var firebase = require("firebase/app");
+const firebase = require('firebase/app');
 require('firebase/database');
 
 const firebaseConfig = {
@@ -15,16 +15,19 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const database = app.database();
 
+// meals object
+let meals = {};
+
 // function to get the meal data from firebase
 const getMealsFirebaseData = () => {
-  return firebase.database().ref('/meals').once('value').then(function(snapshot) {
-    let mealData = (snapshot.val()) || {};
+  firebase.database().ref('/meals').once('value').then((snapshot) => {
+    const mealData = (snapshot.val()) || {};
     meals = mealData;
   });
-}
+};
 
-// meals object
-let meals = getMealsFirebaseData();
+// get meals
+getMealsFirebaseData();
 
 // function to send a json object
 const respondJSON = (request, response, status, object) => {
@@ -46,19 +49,6 @@ const respondJSONMeta = (request, response, status) => {
   // send response without json object, just headers
   response.writeHead(status, headers);
   response.end();
-};
-
-// function to get the users
-const getUsers = (request, response) => {
-  const responseJSON = {
-    users,
-  };
-
-  if (request.method === 'HEAD') {
-    return respondJSONMeta(request, response, 200);
-  }
-
-  return respondJSON(request, response, 200, responseJSON);
 };
 
 // function to add a new meal
@@ -103,7 +93,7 @@ const addMeal = (request, response, body) => {
   firebase.database().ref(`meals/${body.day}/${body.mealType}`).set({
     title: body.title,
     day: body.day,
-    mealType : body.mealType,
+    mealType: body.mealType,
   });
 
   // if response is created, then set our created message
@@ -150,7 +140,8 @@ const searchMeals = (request, response, params) => {
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  // if they clicked the filter button for all meal types and days, just return the whole meals object
+  // if they clicked the filter button for all meal types and days,
+  // just return the whole meals object
   if (params.mealType === 'all' && params.day === 'all') {
     responseJSON.meals = meals;
     responseJSON.message = 'Queried successfully';
