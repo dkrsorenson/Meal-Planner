@@ -90,7 +90,6 @@
         filteredMealForm.style.display = 'block';
 
         const div = document.getElementById('filteredMealDiv');
-        const children = div.querySelectorAll('p');
         div.innerHTML = '';
 
         // set the title for the meal (show day or meal type that was queried by)

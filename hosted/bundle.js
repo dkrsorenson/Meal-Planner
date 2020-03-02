@@ -90,7 +90,6 @@ var parseJSON = function parseJSON(xhr, content, form) {
 
       _filteredMealForm.style.display = 'block';
       var div = document.getElementById('filteredMealDiv');
-      var children = div.querySelectorAll('p');
       div.innerHTML = ''; // set the title for the meal (show day or meal type that was queried by)
 
       var title = document.createElement('h3');
